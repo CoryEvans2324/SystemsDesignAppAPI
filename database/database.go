@@ -5,7 +5,9 @@ import (
 	"gorm.io/gorm"
 )
 
-func CreateDatabase(dataSourceName string) *gorm.DB {
+var DB *gorm.DB
+
+func CreateDatabase(dataSourceName string) {
 	newDB, err := gorm.Open(postgres.Open(dataSourceName), &gorm.Config{
 		CreateBatchSize: 1000,
 	})
@@ -14,5 +16,5 @@ func CreateDatabase(dataSourceName string) *gorm.DB {
 		panic(err)
 	}
 
-	return newDB
+	DB = newDB
 }

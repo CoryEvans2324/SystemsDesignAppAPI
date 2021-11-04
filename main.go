@@ -2,22 +2,32 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
-	"github.com/CoryEvans2324/SystemsDesignApp/routes"
+	"github.com/CoryEvans2324/SystemsDesignAppAPI/database"
+	"github.com/CoryEvans2324/SystemsDesignAppAPI/models"
+	"github.com/CoryEvans2324/SystemsDesignAppAPI/routes"
 	"github.com/gorilla/mux"
+	"github.com/joho/godotenv"
 )
 
 func main() {
+	err := godotenv.Load()
+	if err != nil {
+		log.Fatal("Error loading .env file")
+	}
+
 	r := mux.NewRouter().StrictSlash(true)
 
-	r.PathPrefix("/static").Handler(http.StripPrefix("/static/", http.FileServer(http.Dir("web/static"))))
-
 	r.HandleFunc("/", routes.Index)
+
+	tracksRouter := r.PathPrefix("/tracks").PathPrefix("/tracks").Subrouter()
+	tracksRouter.HandleFunc("/upload", routes.UploadTracks).Methods("POST")
 
 	srv := &http.Server{
 		Handler:      r,
@@ -25,6 +35,17 @@ func main() {
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
+
+	database.CreateDatabase(fmt.Sprintf(
+		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
+		"127.0.0.1",
+		5432,
+		os.Getenv("POSTGRES_USER"),
+		os.Getenv("POSTGRES_PASSWORD"),
+		"postgres",
+	))
+
+	database.DB.AutoMigrate(models.Track{})
 
 	// Graceful shutdown from https://github.com/gorilla/mux#graceful-shutdown
 
@@ -34,6 +55,8 @@ func main() {
 			log.Println(err)
 		}
 	}()
+
+	log.Printf("Server is running at %s", srv.Addr)
 
 	c := make(chan os.Signal, 1)
 	// We'll accept graceful shutdowns when quit via SIGINT (Ctrl+C)
