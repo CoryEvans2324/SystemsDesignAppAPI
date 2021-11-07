@@ -7,7 +7,8 @@ import (
 )
 
 type Point struct {
-	X, Y float64
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
 }
 
 func (p Point) GormDataType() string {

@@ -12,6 +12,7 @@ import (
 	"github.com/CoryEvans2324/SystemsDesignAppAPI/database"
 	"github.com/CoryEvans2324/SystemsDesignAppAPI/models"
 	"github.com/CoryEvans2324/SystemsDesignAppAPI/routes"
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
 )
@@ -30,8 +31,12 @@ func main() {
 	tracksRouter.HandleFunc("/", routes.GetTracks).Methods("GET")
 	tracksRouter.HandleFunc("/upload", routes.UploadTracks).Methods("POST")
 
+	headersOk := handlers.AllowedHeaders([]string{"*"})
+	originsOk := handlers.AllowedOrigins([]string{"*"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+
 	srv := &http.Server{
-		Handler:      r,
+		Handler:      handlers.CORS(originsOk, headersOk, methodsOk)(r),
 		Addr:         "0.0.0.0:8000",
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,

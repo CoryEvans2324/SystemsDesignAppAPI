@@ -12,13 +12,13 @@ import (
 type Track struct {
 	gorm.Model
 
-	ID                    uint `gorm:"primaryKey,unique"`
-	GlobalID              uuid.UUID
-	Description           string
-	Status                string
-	ObjectTypeDescription string
-	ShapeLength           float64
-	Geometry              Path
+	ID                    uint      `json:"-" gorm:"primaryKey,unique"`
+	GlobalID              uuid.UUID `json:"global_id"`
+	Description           string    `json:"description"`
+	Status                string    `json:"status"`
+	ObjectTypeDescription string    `json:"object_type_description"`
+	ShapeLength           float64   `json:"shape_length"`
+	Geometry              Path      `json:"geometry"`
 }
 
 func LoadFromFile(r io.Reader) []Track {

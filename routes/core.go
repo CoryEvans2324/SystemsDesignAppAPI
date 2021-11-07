@@ -47,7 +47,5 @@ func GetTracks(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusOK)
 	}
 
-	log.Println(len(tracks))
-
 	json.NewEncoder(w).Encode(tracks)
 }

@@ -7,7 +7,7 @@ import (
 )
 
 type Path struct {
-	Points []Point
+	Points []Point `json:"points"`
 }
 
 func (p Path) GormDataType() string {
