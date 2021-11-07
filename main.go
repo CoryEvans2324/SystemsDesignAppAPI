@@ -26,7 +26,8 @@ func main() {
 
 	r.HandleFunc("/", routes.Index)
 
-	tracksRouter := r.PathPrefix("/tracks").PathPrefix("/tracks").Subrouter()
+	tracksRouter := r.PathPrefix("/tracks").Subrouter()
+	tracksRouter.HandleFunc("/", routes.GetTracks).Methods("GET")
 	tracksRouter.HandleFunc("/upload", routes.UploadTracks).Methods("POST")
 
 	srv := &http.Server{

@@ -1,6 +1,7 @@
 package routes
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
 
@@ -33,4 +34,20 @@ func UploadTracks(w http.ResponseWriter, r *http.Request) {
 	} else {
 		w.WriteHeader(http.StatusOK)
 	}
+}
+
+func GetTracks(w http.ResponseWriter, r *http.Request) {
+	var tracks []models.Track
+	result := database.DB.Limit(100).Find(&tracks)
+
+	if result.Error != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	} else {
+		w.WriteHeader(http.StatusOK)
+	}
+
+	log.Println(len(tracks))
+
+	json.NewEncoder(w).Encode(tracks)
 }
