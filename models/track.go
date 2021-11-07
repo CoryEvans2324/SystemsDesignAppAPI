@@ -12,7 +12,7 @@ import (
 type Track struct {
 	gorm.Model
 
-	ID                    uint      `json:"-" gorm:"primaryKey,unique"`
+	ID                    uint      `json:"ID" gorm:"primaryKey,unique"`
 	GlobalID              uuid.UUID `json:"global_id"`
 	Description           string    `json:"description"`
 	Status                string    `json:"status"`

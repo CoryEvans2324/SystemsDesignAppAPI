@@ -43,9 +43,13 @@ func GetTracks(w http.ResponseWriter, r *http.Request) {
 	if result.Error != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
-	} else {
-		w.WriteHeader(http.StatusOK)
 	}
 
-	json.NewEncoder(w).Encode(tracks)
+	w.Header().Set("Content-Type", "application/json")
+	data, err := json.Marshal(tracks)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		return
+	}
+	w.Write(data)
 }
