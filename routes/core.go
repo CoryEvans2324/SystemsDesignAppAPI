@@ -26,9 +26,8 @@ func UploadTracks(w http.ResponseWriter, r *http.Request) {
 	tracks := models.LoadFromFile(file)
 	log.Println(len(tracks))
 	tx := database.DB.Clauses(clause.OnConflict{
-		Columns:   []clause.Column{{Name: "id"}},
-		DoUpdates: clause.AssignmentColumns([]string{"description", "status", "object_type_description", "shape_length", "geometry"}),
-	})
+		UpdateAll: true,
+	}).Create(&tracks)
 	if tx.Error != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	} else {
