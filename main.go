@@ -14,15 +14,9 @@ import (
 	"github.com/CoryEvans2324/SystemsDesignAppAPI/routes"
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
-	"github.com/joho/godotenv"
 )
 
 func main() {
-	err := godotenv.Load()
-	if err != nil {
-		log.Fatal("Error loading .env file")
-	}
-
 	r := mux.NewRouter().StrictSlash(true)
 
 	r.HandleFunc("/", routes.Index)
@@ -37,19 +31,21 @@ func main() {
 
 	srv := &http.Server{
 		Handler:      handlers.CORS(originsOk, headersOk, methodsOk)(r),
-		Addr:         "0.0.0.0:8000",
+		Addr:         "0.0.0.0:80",
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
 
-	database.CreateDatabase(fmt.Sprintf(
-		"host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
-		"127.0.0.1",
-		5432,
+	databaseURL := fmt.Sprintf(
+		"host=%s port=%s user=%s password=%s dbname=%s sslmode=disable",
+		os.Getenv("POSTGRES_HOST"),
+		os.Getenv("POSTGRES_PORT"),
 		os.Getenv("POSTGRES_USER"),
 		os.Getenv("POSTGRES_PASSWORD"),
-		"postgres",
-	))
+		os.Getenv("POSTGRES_DB"),
+	)
+	log.Println(databaseURL)
+	database.CreateDatabase(databaseURL)
 
 	database.DB.AutoMigrate(models.Track{})
 
