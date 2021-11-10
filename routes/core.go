@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"log"
 	"net/http"
+	"strconv"
 
 	"github.com/CoryEvans2324/SystemsDesignAppAPI/database"
 	"github.com/CoryEvans2324/SystemsDesignAppAPI/models"
@@ -36,8 +37,19 @@ func UploadTracks(w http.ResponseWriter, r *http.Request) {
 }
 
 func GetTracks(w http.ResponseWriter, r *http.Request) {
+	limitStr := r.URL.Query().Get("limit")
+
+	limit, err := strconv.Atoi(limitStr)
+	if err != nil {
+		limit = 100
+	}
+
+	if limit > 1000 {
+		limit = 1000
+	}
+
 	var tracks []models.Track
-	result := database.DB.Limit(100).Find(&tracks)
+	result := database.DB.Limit(limit).Find(&tracks)
 
 	if result.Error != nil {
 		w.WriteHeader(http.StatusInternalServerError)
